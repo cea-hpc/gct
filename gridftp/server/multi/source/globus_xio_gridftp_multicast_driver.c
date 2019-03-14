@@ -733,6 +733,7 @@ xio_l_gridftp_multicast_open(
     int                                 str_max_len = 0;
     globus_fifo_t                       url_q;
     gss_cred_id_t                       cred = NULL;
+    char *                              user_sbj;
     char *                              sbj;
     char *                              username;
     char *                              pw;
@@ -741,13 +742,10 @@ xio_l_gridftp_multicast_open(
     GlobusXIOName(xio_l_gridftp_multicast_open);
 
     attr = (xio_l_gridftp_multicast_attr_t *) driver_attr;
+    if(!attr)
+      attr = &xio_l_gmc_default_attr;
 
-    if(attr == NULL)
-    {
-        /*set attr to some default */
-        attr = &xio_l_gmc_default_attr;
-    }
-
+    sbj = attr->subject;
     handle = (xio_l_gridftp_multicast_handle_t *) globus_calloc(
         1, sizeof(xio_l_gridftp_multicast_handle_t));
     globus_mutex_init(&handle->mutex, NULL);
@@ -760,7 +758,7 @@ xio_l_gridftp_multicast_open(
         op,
         GLOBUS_XIO_ATTR_GET_CREDENTIAL,
         &cred,
-        &sbj,
+        &user_sbj,
         &username,
         &pw);
     if(result == GLOBUS_SUCCESS && cred != NULL)
